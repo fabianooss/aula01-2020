@@ -8,35 +8,15 @@
     <p> {{aluno.nome}} </p>
     <p> {{aluno.media + 1}} </p>
 
-    <ul>
-      <li v-for="c in carros" :key="c"> {{c}} </li>
-    </ul>
-
+    <lista-carros :carros="carros"></lista-carros>
 
     <hr/>
 
-    <form @submit.prevent="adicionarCarro2()">
-      <span v-show="novoCarro.fabricante != null"> {{novoCarro.fabricante + ' ' + novoCarro.nome}}<br/>  </span>
-      {{ marcaNome }} <br/>
-
-      <input type="text" placeholder="Informe o nome" required v-model="novoCarro.nome"/> <br>
-      <input type="number" step="0.5" placeholder="Infome o valor" required v-model.number="novoCarro.preco"/> <br>
-
-      <select v-model="novoCarro.fabricante">
-        <option v-for="f in fabricantes" :key="f">{{f}}</option>
-
-      </select>
-
-      <label for="arCondicionado">Ar condicionado</label>
-      <input type="checkbox" id="arCondicionado"  v-model="novoCarro.arCondicionado"/>
-
-      <button type="submit">Adicionar</button>
-    </form>
+    <form-carro @adicionar="adicionarCarro2"></form-carro>
 
     <hr/>
 
     <input type="text" v-model="filtro" placeholder="Filtrar pelo nome"/>
-
     <table>
       <tr>
         <th>Nome</th>
@@ -66,8 +46,13 @@
 
 
 // JSON - Javascript Object Notation
-
+import ListaCarros from './components/ListaCarros'
+import FormCarro from './components/FormCarro'
+// import '@/components/ListaCarros'
 export default {
+  components: {
+    ListaCarros, FormCarro
+  },
 
   data() {
     return {
@@ -88,17 +73,21 @@ export default {
         {nome: 'Chevette', preco: 1000},
         {nome: 'Opala', preco: 5000}
       ],
-      novoCarro: {
-        nome: '',
-        preco: null,
-        fabricante: null,
-        arCondicionado: false
-      },
-      fabricantes : ['VW', 'GM', 'BMW'],
+
       filtro: ''
 
     }
   },
+
+  beforeMount() {
+    console.log('before mount')
+  },
+  mounted() {
+    console.log('mounted')
+    this.updateDate()
+
+  },
+
 
   methods: {
     updateDate() {
@@ -114,10 +103,10 @@ export default {
     adicionarCarro() {
       this.carros.push('Brasilia')
     },
-    adicionarCarro2() {
+    adicionarCarro2(carroP) {
       const novoCarro = {
-        nome: this.novoCarro.nome,
-        preco: this.novoCarro.preco
+        nome: carroP.nome,
+        preco: carroP.preco
       }
       this.carros2.push(novoCarro)
 
@@ -133,13 +122,18 @@ export default {
 
   },
 
+  watch: {
+    filtro: function(val) {
+      console.log(val)
+    }
+  },
   computed: {
-    marcaNome() {
+/*    marcaNome() {
       if (this.novoCarro.fabricante) {
         return (this.novoCarro.fabricante + ' ' + this.novoCarro.nome).split('').reverse().join('')
       }
       return ''
-    },
+    }, */
     total() {
       /*let total = 0
       this.carros2.forEach(c => {
